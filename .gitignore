@@ -5,3 +5,23 @@ node_modules/
 __pycache__/
 *.pyc
 .DS_Store
+# Python environments and caches
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Frontend dependencies and builds
+node_modules/
+dist/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Large generated datasets and training artifacts
+src/backend/data/hybrid_dataset.csv
+
+# Logs
+*.log
