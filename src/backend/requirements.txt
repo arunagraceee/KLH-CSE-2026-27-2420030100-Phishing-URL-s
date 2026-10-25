@@ -12,3 +12,4 @@ transformers
 shap
 lightgbm
 google-genai
+pandas

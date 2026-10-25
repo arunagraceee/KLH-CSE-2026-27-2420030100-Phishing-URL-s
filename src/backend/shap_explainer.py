@@ -103,88 +103,88 @@ def explain_prediction(fused_vector):
 # It calculates SHAP importance over the Hybrid test data.
 # ============================================================
 if __name__ == "__main__":
-  print("\n========== PHISHXPERT SHAP ANALYSIS ==========\n")
+    print("\n========== PHISHXPERT SHAP ANALYSIS ==========\n")
 
-# Load hybrid dataset
-df = pd.read_csv("data/hybrid_dataset.csv")
+    # Load hybrid dataset
+    df = pd.read_csv("data/hybrid_dataset.csv")
 
-X = df.drop("label", axis=1)
+    X = df.drop("label", axis=1)
 
-print(f"Dataset shape : {X.shape}")
-print(f"Feature count : {X.shape[1]}")
+    print(f"Dataset shape : {X.shape}")
+    print(f"Feature count : {X.shape[1]}")
 
-# Use a manageable sample for SHAP
-# The model was trained on the same 791-dimensional representation.
-SAMPLE_SIZE = min(500, len(X))
+    # Use a manageable sample for SHAP
+    # The model was trained on the same 791-dimensional representation.
+    SAMPLE_SIZE = min(500, len(X))
 
-X_sample = X.sample(
-    n=SAMPLE_SIZE,
-    random_state=42
-)
-
-print(f"SHAP samples  : {len(X_sample)}")
-print("\nCalculating SHAP values...")
-
-# Calculate SHAP values
-shap_values = explainer.shap_values(X_sample)
-
-if isinstance(shap_values, list):
-    shap_values = shap_values[1]
-
-elif isinstance(shap_values, np.ndarray) and shap_values.ndim == 3:
-    shap_values = shap_values[:, :, 1]
-
-# Global mean absolute SHAP
-mean_abs_shap = np.mean(
-    np.abs(shap_values),
-    axis=0
-)
-
-importance = pd.DataFrame({
-    "feature": FEATURE_NAMES,
-    "mean_abs_shap": mean_abs_shap
-})
-
-importance = importance.sort_values(
-    "mean_abs_shap",
-    ascending=False
-).reset_index(drop=True)
-
-# ============================================================
-# SAVE RESULTS
-# ============================================================
-
-importance.to_csv(
-    "shap_feature_importance.csv",
-    index=False
-)
-
-top10 = importance.head(10)
-
-print("\n========== TOP 10 SHAP FEATURES ==========\n")
-
-for i, row in top10.iterrows():
-    print(
-        f"{i+1:2d}. "
-        f"{row['feature']:30s} "
-        f"{row['mean_abs_shap']:.6f}"
+    X_sample = X.sample(
+        n=SAMPLE_SIZE,
+        random_state=42
     )
 
-# Top engineered features only
-engineered = importance[
-    ~importance["feature"].str.startswith("bert_")
-].head(10)
+    print(f"SHAP samples  : {len(X_sample)}")
+    print("\nCalculating SHAP values...")
 
-print("\n========== TOP ENGINEERED FEATURES ==========\n")
+    # Calculate SHAP values
+    shap_values = explainer.shap_values(X_sample)
 
-for i, row in engineered.iterrows():
-    print(
-        f"{i+1:2d}. "
-        f"{row['feature']:30s} "
-        f"{row['mean_abs_shap']:.6f}"
+    if isinstance(shap_values, list):
+        shap_values = shap_values[1]
+
+    elif isinstance(shap_values, np.ndarray) and shap_values.ndim == 3:
+        shap_values = shap_values[:, :, 1]
+
+    # Global mean absolute SHAP
+    mean_abs_shap = np.mean(
+        np.abs(shap_values),
+        axis=0
     )
 
-print("\nSaved:")
-print("  shap_feature_importance.csv")
+    importance = pd.DataFrame({
+        "feature": FEATURE_NAMES,
+        "mean_abs_shap": mean_abs_shap
+    })
 
-print("\n========== SHAP ANALYSIS COMPLETE ==========\n")
+    importance = importance.sort_values(
+        "mean_abs_shap",
+        ascending=False
+    ).reset_index(drop=True)
+
+    # ============================================================
+    # SAVE RESULTS
+    # ============================================================
+
+    importance.to_csv(
+        "shap_feature_importance.csv",
+        index=False
+    )
+
+    top10 = importance.head(10)
+
+    print("\n========== TOP 10 SHAP FEATURES ==========\n")
+
+    for i, row in top10.iterrows():
+        print(
+            f"{i+1:2d}. "
+            f"{row['feature']:30s} "
+            f"{row['mean_abs_shap']:.6f}"
+        )
+
+    # Top engineered features only
+    engineered = importance[
+        ~importance["feature"].str.startswith("bert_")
+    ].head(10)
+
+    print("\n========== TOP ENGINEERED FEATURES ==========\n")
+
+    for i, row in engineered.iterrows():
+        print(
+            f"{i+1:2d}. "
+            f"{row['feature']:30s} "
+            f"{row['mean_abs_shap']:.6f}"
+        )
+
+    print("\nSaved:")
+    print("  shap_feature_importance.csv")
+
+    print("\n========== SHAP ANALYSIS COMPLETE ==========\n")
