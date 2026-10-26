@@ -7,6 +7,7 @@ urllib3
 pydantic
 joblib
 scikit-learn
+--extra-index-url https://download.pytorch.org/whl/cpu
 torch
 transformers
 shap
